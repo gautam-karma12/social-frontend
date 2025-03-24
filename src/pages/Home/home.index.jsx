@@ -63,7 +63,6 @@ const HomePage = () => {
 		);
 		setPosts(updatedPosts);
 		setCommentInput({ ...commentInput, [postId]: "" });
-		toast.success("Comment added!");
 	};
 
 	const showModal = () => setIsModalVisible(true);

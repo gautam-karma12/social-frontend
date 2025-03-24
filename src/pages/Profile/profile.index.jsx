@@ -10,23 +10,24 @@ import {
   List,
   Typography,
   Spin,
+  Drawer
 } from "antd";
 import {
   UserOutlined,
   EditOutlined,
   UploadOutlined,
   HomeOutlined,
-  MailOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
   LogoutOutlined,
   ProfileOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
 } from "@ant-design/icons";
 import useCustomNavigation from "../../helper/handleNavigation/index";
 import { toast } from "react-toastify";
 import { getProfileData } from "../../services/authService";
 import { getOwnPost } from "../../services/postService";
 import { useLocation } from "react-router-dom";
+import "./profile.css"; // Importing CSS for responsiveness
 
 const { Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -38,6 +39,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const location = useLocation();
   const { goTo } = useCustomNavigation();
 
@@ -46,7 +48,7 @@ export default function Profile() {
     fetchPosts();
 
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 150); // Adjust threshold as needed
+      setIsScrolled(window.scrollY > 150);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -73,7 +75,7 @@ export default function Profile() {
   };
 
   const handleEditClick = () => setIsEditing(true);
-  const handleSaveClick = async () => {
+  const handleSaveClick = () => {
     setIsEditing(false);
     toast.success("Profile updated successfully");
   };
@@ -94,6 +96,10 @@ export default function Profile() {
     goTo("/");
   };
 
+  const toggleDrawer = () => {
+    setDrawerVisible(!drawerVisible);
+  };
+
   if (loading) {
     return (
       <Spin
@@ -104,144 +110,121 @@ export default function Profile() {
   }
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      {/* Sidebar */}
-      <Sider collapsible collapsed={collapsed} trigger={null} width={220} theme='light' style={{ position: 'fixed', height: '100vh', overflowY: 'auto' }}>
-        <Button type="text" onClick={() => setCollapsed(!collapsed)} style={{ width: '10%', textAlign: 'left' }}>
+    <Layout className="profile-layout">
+      {/* Sidebar for large screens */}
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        trigger={null}
+        width={220}
+        theme="light"
+        className="sidebar"
+      >
+        <Button type="text" onClick={() => setCollapsed(!collapsed)} style={{ width: "100%" }}>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button>
-        <Menu mode='inline' selectedKeys={[location.pathname]}>
-          <Menu.Item key='/home' icon={<HomeOutlined />} onClick={() => goTo("/home")}>
+        <Menu mode="inline" selectedKeys={[location.pathname]}>
+          <Menu.Item key="/home" icon={<HomeOutlined />} onClick={() => goTo("/home")}>
             Home
           </Menu.Item>
-          <Menu.Item key='/profile' icon={<ProfileOutlined />} onClick={() => goTo("/profile")}>
+          <Menu.Item key="/profile" icon={<ProfileOutlined />} onClick={() => goTo("/profile")}>
             Profile
           </Menu.Item>
-          <Menu.Item key='/logout' icon={<LogoutOutlined />} onClick={handleLogout}>
+          <Menu.Item key="/logout" icon={<LogoutOutlined />} onClick={handleLogout}>
             Logout
           </Menu.Item>
         </Menu>
       </Sider>
 
-      {/* Content */}
-      <Layout style={{ marginLeft: 220, padding: "9px" }}>
+      {/* Drawer for small screens */}
+      <Drawer
+        title="Menu"
+        placement="left"
+        onClose={toggleDrawer}
+        visible={drawerVisible}
+      >
+        <Menu mode="vertical" selectedKeys={[location.pathname]}>
+          <Menu.Item key="/home" icon={<HomeOutlined />} onClick={() => goTo("/home")}>
+            Home
+          </Menu.Item>
+          <Menu.Item key="/profile" icon={<ProfileOutlined />} onClick={() => goTo("/profile")}>
+            Profile
+          </Menu.Item>
+          <Menu.Item key="/logout" icon={<LogoutOutlined />} onClick={handleLogout}>
+            Logout
+          </Menu.Item>
+        </Menu>
+      </Drawer>
+
+      <Layout className="content-layout">
         {/* Sticky Header */}
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: collapsed ? 80 : 220,
-            right: 0,
-            height: "60px",
-            backgroundColor: "white",
-            display: "flex",
-            alignItems: "center",
-            padding: "0 20px",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-            transition: "left 0.3s ease-in-out",
-            zIndex: 1000,
-          }}
-        >
-          {!isScrolled && (
-            <Title level={4} style={{ margin: 0 }}>
-              Profile
-            </Title>
-          )}
-          {isScrolled && user && (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginLeft: "20px",
-              }}
-            >
-              <Avatar size={40} src={user.profilePic} icon={<UserOutlined />} />
-              <div style={{ marginLeft: "10px" }}>
-                <Text strong>{user.username}</Text>
-                <br />
-                <Text type="secondary">{user.email}</Text>
-              </div>
-            </div>
-          )}
+        <div className={`header ${isScrolled ? "scrolled" : ""}`}>
+          <Button type="text" onClick={toggleDrawer} className="menu-btn">
+            <MenuUnfoldOutlined />
+          </Button>
+          <Title level={4} style={{ margin: 0 }}>Profile</Title>
         </div>
 
-        {/* Main Profile Card */}
-        <Content
-          style={{
-            marginTop: "60px",
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Card style={{ width: 1670 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Avatar
-                size={64}
-                src={user?.profilePic}
-                icon={<UserOutlined />}
-              />
+        {/* Main Profile Content */}
+        <Content className="content mt-5">
+          <Card className="profile-card">
+            <div className="profile-info">
+              <Avatar size={64} src={user?.profilePic} icon={<UserOutlined />} />
               <div>
                 {isEditing ? (
-                  <Input
-                    value={user?.username}
-                    onChange={(e) =>
-                      setUser({ ...user, username: e.target.value })
-                    }
-                  />
+                  <>
+                    <Input
+                      value={user?.username}
+                      onChange={(e) => setUser({ ...user, username: e.target.value })}
+                      placeholder="Username"
+                    />
+                    <Input
+                      value={user?.email}
+                      onChange={(e) => setUser({ ...user, email: e.target.value })}
+                      placeholder="Email"
+                      style={{ marginTop: "8px" }}
+                    />
+                  </>
                 ) : (
-                  <Title level={4}>{user?.username}</Title>
-                )}
-                {isEditing ? (
-                  <Input
-                    value={user?.email}
-                    onChange={(e) =>
-                      setUser({ ...user, email: e.target.value })
-                    }
-                  />
-                ) : (
-                  <Text>{user?.email}</Text>
+                  <>
+                    <Title level={4}>{user?.username}</Title>
+                    <Text>{user?.email}</Text>
+                  </>
                 )}
               </div>
             </div>
 
-            <div style={{ marginTop: "10px" }}>
-              <Upload
-                showUploadList={false}
-                beforeUpload={() => false}
-                onChange={handleFileChange}
-              >
-                <Button icon={<UploadOutlined />}>Upload Picture</Button>
-              </Upload>
-            </div>
+            <Upload
+              showUploadList={false}
+              beforeUpload={() => false}
+              onChange={handleFileChange}
+            >
+              <Button icon={<UploadOutlined />} style={{ marginTop: "10px" }}>
+                Upload Picture
+              </Button>
+            </Upload>
 
             <Button
               type="primary"
               icon={isEditing ? <UploadOutlined /> : <EditOutlined />}
               onClick={isEditing ? handleSaveClick : handleEditClick}
-              style={{ marginTop: "16px", width: "9%" }}
+              style={{ marginTop: "16px", width: "10%" , marginLeft: "2vh"}}
             >
               {isEditing ? "Save" : "Edit"}
             </Button>
           </Card>
+
           <List
             dataSource={posts}
             renderItem={(post) => (
               <List.Item key={post.id}>
-                <Card
-                  title={post.title}
-                  style={{ width: 1200, marginLeft: "10px" }}
-                >
+                <Card title={post.title} className="post-card">
                   <p>{post.content}</p>
                   {post.image && (
                     <img
                       src={post.image}
                       alt="Post"
-                      style={{
-                        width: "100%",
-                        maxHeight: "280px",
-                        objectFit: "cover",
-                      }}
+                      className="post-image"
                     />
                   )}
                   <Text>{new Date(post.createdAt).toLocaleDateString()}</Text>
