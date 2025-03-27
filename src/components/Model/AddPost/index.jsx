@@ -14,26 +14,11 @@ const PostModal = ({ isModalVisible, handleCancel, handleAddPost }) => {
 	const validationSchema = Yup.object().shape({
 		title: Yup.string().required("Title is required"),
 		content: Yup.string().required("Content is required"),
-		// file: Yup.mixed().required("Image is required"),
+		// image: Yup.mixed().required("Image is required"),
 	});
-	const convertToBase64 = (file) => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-	
-			reader.onload = () => resolve(reader.result);   // Base64 string
-			reader.onerror = (error) => reject(error);
-		});
-	};
 	// File upload handler
 	const handleUpload = async ({ file }) => {
-		if (!file) {
-			toast.warn("Select a file to upload")
-            return;
-        }
-		const base64String = await convertToBase64(file);
-        const response = await UploadImage(base64String);
-		setFile(response);
+		setFile(file.response.imageUrl);
 	};
 
 	// Form submission handler
@@ -41,13 +26,13 @@ const PostModal = ({ isModalVisible, handleCancel, handleAddPost }) => {
 		const formData = new FormData();
 		formData.append("title", values.title);
 		formData.append("content", values.content);
-		formData.append("image", 'https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg');
+		formData.append("image", file);
 		// if (file) {
 		// 	formData.append("file", file);
 		// }
 		handleAddPost(formData);
 		setSubmitting(false);
-		setFile(null);  // Reset file after submission
+		setFile(null);
 	};
 
 	return (
@@ -89,10 +74,9 @@ const PostModal = ({ isModalVisible, handleCancel, handleAddPost }) => {
 							{touched.content && errors.content && (
 								<div style={{ color: "red" }}>{errors.content}</div>
 							)}
-
-							{/* File Upload */}
 							<Upload
-								beforeUpload={() => false}
+							    name='image'
+								action='https://social-backend-production-4ffa.up.railway.app/api/upload-image'
 								onChange={handleUpload}
 								accept="image/*,video/*"
 								maxCount={1}
@@ -100,7 +84,6 @@ const PostModal = ({ isModalVisible, handleCancel, handleAddPost }) => {
 								<Button icon={<UploadOutlined />}>Upload Image/Video</Button>
 							</Upload>
 
-							{/* Form Actions */}
 							<div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
 								<Button onClick={handleCancel}>Cancel</Button>
 								<Button

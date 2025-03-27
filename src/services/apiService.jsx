@@ -1,15 +1,13 @@
 import axios from "axios";
 
-// Base URL configuration
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",  // Replace with your actual base URL
-  timeout: 10000,                      // Timeout of 10 seconds
+  baseURL: "https://social-backend-production-4ffa.up.railway.app/api",
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Request Interceptor
 api.interceptors.request.use(
   (config) => {
     // Add auth token if available
