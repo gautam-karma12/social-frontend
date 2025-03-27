@@ -48,8 +48,8 @@ const HomePage = () => {
   const [selectedComments, setSelectedComments] = useState([]);
   const [selectedUser, setSelectedUser] = useState([]);
   const [followingUsers, setFollowingUsers] = useState([]);
-  console.log("selectedUser", selectedUser);
   const navigate = useNavigate();
+  const currentUser = localStorage.getItem('userId');
 
   const handleNavigateProfile = () => navigate("/profile");
 
@@ -106,7 +106,7 @@ const HomePage = () => {
           ...post,
           likes: post.likes.length, // Convert likes array to count
           liked: post.likes.some(
-            (like) => like.userId === (3 || currentUser.id)
+            (like) => like.userId === currentUser
           ), // Check if the user liked it
           comments: post.comments || [], // Ensure comments is always an array
         }));
@@ -160,7 +160,6 @@ const HomePage = () => {
     setIsCommentModalVisible(true);
   };
   const openProfilePage = (userData) => {
-    console.log("userData", userData?.user);
     setSelectedUser(userData?.user || []);
     setIsProfileModalVisible(true);
   };
@@ -180,12 +179,10 @@ const HomePage = () => {
       if (isFollowing) {
         // Unfollow logic
         response = await unfollowUser(userId);
-        console.log("response", response);
         setFollowingUsers(followingUsers.filter((id) => id !== userId));
       } else {
         // Follow logic
         response = await followUser(userId);
-        console.log("response", response);
         setFollowingUsers([...followingUsers, userId]);
       }
       toast.success(response?.data?.message);
@@ -252,14 +249,14 @@ const HomePage = () => {
                   </Space>
                   <Row justify="end">
                     <Col>
-                      <Button
+                      {parseInt(post.user.id) !== parseInt(currentUser) && <Button
                         type="primary"
                         onClick={() => handleFollowToggle(post.user.id)}
                       >
                         {followingUsers.includes(post.user.id)
                           ? "Following"
                           : "Follow"}
-                      </Button>
+                      </Button>}
                     </Col>
                   </Row>
                 </Row>

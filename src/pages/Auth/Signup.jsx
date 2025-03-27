@@ -8,7 +8,6 @@ export default function SignUp() {
 	const onSubmit = async (values) => {
 		try {
 			const data = await signUp(values);
-           console.log("data",data)
 			if (data.success) {
 				toast.success("Sign Up Successfully");
 				navigate("/");

@@ -6,13 +6,13 @@ import { login } from "../../services/authService"
 const Login = () => {
 	const navigate = useNavigate();
 	const handleSubmit = async (values) => {
-		console.log("values",values)
 		try {
 			const response = await login(values);
 			if(response.success)
 			{
 				const { token } = response.data;
 				localStorage.setItem("token", token);
+				localStorage.setItem("userId", response.data.userId);
 				toast.success("Login successful!");
 				navigate("/home");}
 				else{

@@ -4,8 +4,8 @@ import Home from "./pages/Home/home.index";
 import NotFound from "./pages/pageNotFound.index";
 import { Route, Routes } from "react-router-dom";
 import ProtectedLayout from "./layout/index";
-import Login from "./pages/Auth/login";
-import SignUp from "./pages/Auth/signup";
+import Login from "./pages/Auth/Login";
+import SignUp from "./pages/Auth/Signup";
 import Profile from "./pages/Profile/profile.index";
 
 function App() {
