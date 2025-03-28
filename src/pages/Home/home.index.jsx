@@ -240,7 +240,7 @@ const HomePage = () => {
                       <Paragraph>{post.content}</Paragraph>
                       {post.image && (
                         <img
-                          src={post.image}
+                          src={`https://social-backend-production-4ffa.up.railway.app${post.image}`}
                           alt="Post"
                           style={{ width: "100%", borderRadius: 8 }}
                         />
@@ -357,7 +357,7 @@ const HomePage = () => {
                   <Row className="">
                     <Title level={5}>{user?.username || "Anonymous"}</Title>
                     <div>
-                      <Button
+                      {parseInt(post.user.id) !== parseInt(currentUser) && <Button
                         type="primary"
                         className="ml-5 justify-content-end"
                         onClick={() => handleFollowToggle(user.id)}
@@ -365,7 +365,7 @@ const HomePage = () => {
                         {followingUsers.includes(user.id)
                           ? "Following"
                           : "Follow"}
-                      </Button>
+                      </Button>}
                     </div>
                   </Row>
                 </div>
