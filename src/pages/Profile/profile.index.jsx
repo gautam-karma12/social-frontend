@@ -340,7 +340,7 @@ export default function Profile() {
                 >
                   <p>{post.content}</p>
                   {post.image && (
-                    <img src={post.image} alt="Post" className="post-image" />
+                    <img src={`https://social-backend-production-4ffa.up.railway.app${post.image}`} alt="Post" className="post-image" />
                   )}
                   <Row>
                     <Col span={2}>
